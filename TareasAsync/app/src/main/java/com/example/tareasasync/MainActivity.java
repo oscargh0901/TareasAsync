@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnArrancar;
     private Button btnParar;
     private TextView resultados;
+    private volatile boolean pararHilo = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 resultados.setText("");
+                pararHilo = false;
                 String tiempoDormido = tiempoEdT.getText().toString();
                 if (tiempoDormido.matches("")) {
                     Toast.makeText(MainActivity.this, "Introduce un número de segundos", Toast.LENGTH_SHORT).show();
@@ -42,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
                     cierraTeclado();
                     resultados.append("Ejecutando Tarea pesada: "+tiempoDormido+" sg --> ");
                     tareaPesada(Integer.parseInt(tiempoDormido),resultados);
-                    resultados.append("Terminada tarea pesada \n");
                 }
             }
         });
@@ -53,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 cierraTeclado();
                 resultados.append("Parando tarea pesada \n");
-                finish();
             }
         });
     }
@@ -66,18 +66,35 @@ public class MainActivity extends AppCompatActivity {
         Runnable tarea = new Runnable() {
             @Override
             public void run() {
+
+                if (pararHilo) {
+                    result.append("Tarea cancelada \n");
+                    return;
+                }
+
                 try {
-                    Thread.sleep(tiempo*1000);
+                    // Muestro un mensaje por cada segundo
+                    for (int i = 0; i < tiempo; i++) {
+                        Thread.sleep(1000);
+                        result.append((i+1)+"s ...");
+                    }
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                result.append("Tarea pesada realizada en "+tiempo+" sg \n");
+                result.append("Tarea pesada realizada en "+tiempo+" segundos.");
             }
         };
+
         // Creamos un objeto de la clase Thread y le pasamos el objeto Runnable
         Thread hilo = new Thread(tarea);
         // Arrancamos el hilo
         hilo.start();
+    }
+
+    // Metodo para parar el hilo
+    protected void pararHilo(View view){
+        pararHilo = true;
     }
 
     protected void cierraTeclado(){
