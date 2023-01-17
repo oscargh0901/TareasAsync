@@ -3,6 +3,7 @@ package com.example.tareasasync;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btnArrancar;
     private Button btnParar;
     private TextView resultados;
-    private volatile boolean pararHilo = false;
+
+    Thread hilo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,16 +36,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 resultados.setText("");
-                pararHilo = false;
                 String tiempoDormido = tiempoEdT.getText().toString();
                 if (tiempoDormido.matches("")) {
                     Toast.makeText(MainActivity.this, "Introduce un número de segundos", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 else{
+                    btnArrancar.setEnabled(false);
                     cierraTeclado();
                     resultados.append("Ejecutando Tarea pesada: "+tiempoDormido+" sg --> ");
-                    tareaPesada(Integer.parseInt(tiempoDormido),resultados);
+                    tareaPesada(Integer.parseInt(tiempoDormido), resultados);
                 }
             }
         });
@@ -53,7 +55,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cierraTeclado();
-                resultados.append("Parando tarea pesada \n");
+                resultados.append("Parando tarea pesada... \n");
+
+                // Si el hilo está en ejecución, lo interrumpe
+                if (hilo != null && hilo.isAlive()) {
+                    hilo.interrupt();
+                }
             }
         });
     }
@@ -66,35 +73,27 @@ public class MainActivity extends AppCompatActivity {
         Runnable tarea = new Runnable() {
             @Override
             public void run() {
-
-                if (pararHilo) {
-                    result.append("Tarea cancelada \n");
-                    return;
-                }
-
-                try {
+                try
+                {
                     // Muestro un mensaje por cada segundo
-                    for (int i = 0; i < tiempo; i++) {
+                    for (int i = 0; i < tiempo; i++)
+                    {
                         Thread.sleep(1000);
-                        result.append((i+1)+"s ...");
+                        result.append((i + 1) + "s ...");
                     }
-
-                } catch (InterruptedException e) {
+                }
+                catch (InterruptedException e)
+                {
                     e.printStackTrace();
                 }
-                result.append("Tarea pesada realizada en "+tiempo+" segundos.");
+                result.append("Tarea finalizada\n");
             }
         };
 
         // Creamos un objeto de la clase Thread y le pasamos el objeto Runnable
-        Thread hilo = new Thread(tarea);
+        hilo = new Thread(tarea);
         // Arrancamos el hilo
         hilo.start();
-    }
-
-    // Metodo para parar el hilo
-    protected void pararHilo(View view){
-        pararHilo = true;
     }
 
     protected void cierraTeclado(){

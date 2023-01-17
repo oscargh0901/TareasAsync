@@ -34,6 +34,7 @@ public class SplashActivity extends AppCompatActivity {
                     public void run() {
                         try
                         {
+                            Toast.makeText(SplashActivity.this, "Arrancando la aplicacion...", Toast.LENGTH_SHORT).show();
                             Thread.sleep(4000);
                             progressDialog.dismiss();
                             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
@@ -43,6 +44,10 @@ public class SplashActivity extends AppCompatActivity {
                         catch (InterruptedException e)
                         {
                             e.printStackTrace();
+                        }
+                        finally
+                        {
+                            service.shutdown();
                         }
                     }
                 });
