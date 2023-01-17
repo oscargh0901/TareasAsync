@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnParar;
     private TextView resultados;
 
-    Thread hilo;
+    Thread hilo = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,20 +32,30 @@ public class MainActivity extends AppCompatActivity {
         btnParar = (Button) findViewById(R.id.btn_parar);
         resultados = (TextView) findViewById(R.id.tv_result);
 
-        btnArrancar.setOnClickListener(new View.OnClickListener() {
+        btnArrancar.setOnClickListener(new View.OnClickListener() { // Arranca el hilo
             @Override
             public void onClick(View v) {
+                //btnArrancar.setEnabled(false);
                 resultados.setText("");
-                String tiempoDormido = tiempoEdT.getText().toString();
+                String tiempoDormido = tiempoEdT.getText().toString(); // Obtiene el tiempo
+
+                // Comprueba que el tiempo no sea vacio
                 if (tiempoDormido.matches("")) {
                     Toast.makeText(MainActivity.this, "Introduce un número de segundos", Toast.LENGTH_SHORT).show();
                     return;
-                }
-                else{
-                    btnArrancar.setEnabled(false);
+                } else {
                     cierraTeclado();
-                    resultados.append("Ejecutando Tarea pesada: "+tiempoDormido+" sg --> ");
-                    tareaPesada(Integer.parseInt(tiempoDormido), resultados);
+                    resultados.append("Ejecutando Tarea pesada: " + tiempoDormido + " sg --> ");
+
+                    // Crea un hilo
+                    try {
+                        tareaPesada(Integer.parseInt(tiempoDormido), resultados);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    finally {
+                        //btnArrancar.setEnabled(true);
+                    }
                 }
             }
         });
@@ -75,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try
                 {
-                    // Muestro un mensaje por cada segundo
+                    // Muestro un mensaje por cada segundo que dura la tarea
                     for (int i = 0; i < tiempo; i++)
                     {
                         Thread.sleep(1000);
@@ -86,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     e.printStackTrace();
                 }
-                result.append("Tarea finalizada\n");
+                result.append("Tarea finalizada\n"); // Muestro un mensaje cuando finaliza la tarea
             }
         };
 

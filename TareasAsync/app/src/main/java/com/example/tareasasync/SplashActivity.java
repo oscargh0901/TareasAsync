@@ -25,15 +25,16 @@ public class SplashActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        ExecutorService service = Executors.newSingleThreadExecutor();
-        service.execute(new Runnable() {
+        ExecutorService service = Executors.newSingleThreadExecutor(); // Crea un hilo
+        service.execute(new Runnable() { // Ejecuta el hilo
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() { // Ejecuta el hilo en el hilo principal
                     @Override
-                    public void run() {
+                    public void run() { // Ejecuta el hilo principal
                         try
                         {
+                            // Simula una tarea pesada
                             Toast.makeText(SplashActivity.this, "Arrancando la aplicacion...", Toast.LENGTH_SHORT).show();
                             Thread.sleep(4000);
                             progressDialog.dismiss();
@@ -47,6 +48,7 @@ public class SplashActivity extends AppCompatActivity {
                         }
                         finally
                         {
+                            // Cierra el hilo
                             service.shutdown();
                         }
                     }
