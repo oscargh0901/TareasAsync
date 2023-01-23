@@ -59,9 +59,6 @@ public class MainActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    finally {
-                        //btnArrancar.setEnabled(true);
-                    }
                 }
             }
         });
@@ -81,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     // Metodo para realizar una tarea pesada con Runnables
     protected void tareaPesada(int tiempo, TextView result){
 
@@ -91,18 +87,31 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try
                 {
-                    // Muestro un mensaje por cada segundo que dura la tarea
-                    for (int i = 0; i < tiempo; i++)
-                    {
+                    for (int i = 1; i < tiempo+1; i++) { // pongo tiempo+1 para que se ejecute el tiempo indicado (no desde 0)
                         Thread.sleep(1000);
-                        result.append((i + 1) + "s ...");
+
+                        int finalI = i;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                result.append(Integer.toString(finalI).concat("s... "));
+
+                            }
+                        });
                     }
                 }
                 catch (InterruptedException e)
                 {
                     e.printStackTrace();
                 }
-                result.append("Tarea finalizada\n"); // Muestro un mensaje cuando finaliza la tarea
+                finally {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            result.append("Tarea finalizada");
+                        }
+                    });
+                }
             }
         };
 
