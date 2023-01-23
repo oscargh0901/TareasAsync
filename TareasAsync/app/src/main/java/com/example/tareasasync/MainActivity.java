@@ -35,7 +35,12 @@ public class MainActivity extends AppCompatActivity {
         btnArrancar.setOnClickListener(new View.OnClickListener() { // Arranca el hilo
             @Override
             public void onClick(View v) {
-                //btnArrancar.setEnabled(false);
+
+                if (hilo != null && hilo.isAlive()) {
+                    Toast.makeText(MainActivity.this, "El hilo ya esta en ejecucion", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 resultados.setText("");
                 String tiempoDormido = tiempoEdT.getText().toString(); // Obtiene el tiempo
 
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Introduce un número de segundos", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
+
                     cierraTeclado();
                     resultados.append("Ejecutando Tarea pesada: " + tiempoDormido + " sg --> ");
 
@@ -114,8 +120,4 @@ public class MainActivity extends AppCompatActivity {
             // TODO: handle exception
         }
     }
-
 }
-
-
-

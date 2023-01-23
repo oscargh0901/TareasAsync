@@ -25,34 +25,37 @@ public class SplashActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        ExecutorService service = Executors.newSingleThreadExecutor(); // Crea un hilo
-        service.execute(new Runnable() { // Ejecuta el hilo
+        Toast.makeText(SplashActivity.this, "Arrancando la aplicacion...", Toast.LENGTH_SHORT).show();
+
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        service.execute(new Runnable() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() { // Ejecuta el hilo en el hilo principal
+
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() { // Ejecuta el hilo principal
                         try
                         {
-                            // Simula una tarea pesada
-                            Toast.makeText(SplashActivity.this, "Arrancando la aplicacion...", Toast.LENGTH_SHORT).show();
-                            Thread.sleep(4000);
                             progressDialog.dismiss();
                             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
-                        }
-                        catch (InterruptedException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        finally
+                        } finally
                         {
                             // Cierra el hilo
                             service.shutdown();
                         }
                     }
                 });
+
+
             }
         });
     }
